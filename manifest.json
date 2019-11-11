@@ -1,0 +1,17 @@
+{
+    "name": "Subneting resolver",
+    "manifest_version": 2,
+    "description": "Chrome extension to resolve subneting given an ip addres and its net mask",
+    "version": "1.0",
+    "content_scripts": [
+        {
+        "matches": ["<all_urls>"],
+        "js": ["content.js"]
+        }
+    ],
+    "browser_action": {
+        "default_popup": "popup.html",
+        "default_title": "Subneting resolver"
+    },
+    "permissions": ["cookies"]
+}
