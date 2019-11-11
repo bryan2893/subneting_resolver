@@ -75,6 +75,47 @@ const transformDecimalIpToBinaryIp = function(decimalIp){//decimalIp is somethin
     return arrayOfBinaryOctets.join(".");
 };
 
-const getSubnets = function(ipAddres,netmask,amountOfSubnetsNeeded){
-    
+//2 elevado N >= C ========> C = cantidad de subredes a crear, N es lo que determina la funcion.
+const resolveFormula = function(amountOfNetworksNeeded){
+    for(let i = 0;i<equivalenceTable.length;i++){
+        if(amountOfNetworksNeeded <= equivalenceTable[i]){
+            return i;
+        }
+    }
+    return null;
+};
+
+const getBinaryIpFromShortDecimalNetMaskRepresentation = function(shortNetMaskRepresentation){ //netMaskShortRepresentation = 24 -> 11111111.11111111.11111111.00000000
+    let cont = 0;
+    let onesCounter = 0;
+    let octectsArray = [];
+    while(cont < 4){
+        let binaryOctect = "";
+        let cont2 = 0;
+        while(cont2 < 8){
+            if(onesCounter < shortNetMaskRepresentation){
+                binaryOctect += "1";
+                onesCounter += 1;
+            }else{
+                binaryOctect += "0";
+            }
+            cont2++;
+        }
+        octectsArray.push(binaryOctect);
+        cont++;
+    }
+    return octectsArray.join(".");
+};
+
+const getSubnets = function(decimalNetworkAddresIp,shortNetMaskRepresentation,amountOfSubnetsNeeded){
+
+    let N = resolveFormula(amountOfSubnetsNeeded);
+    let amountOfSubnets = Math.pow(2,N); //cantidad de subredes que se crearán.
+
+    let subnetIfo = {
+        networkAddress:"",
+        netMask:""
+    };
+
+
 };
