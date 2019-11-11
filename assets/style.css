@@ -20,6 +20,14 @@ input[type="text"]{
     font-size: 1.5em;
 }
 
+input[type="number"]{
+    height: 30px;
+    border-radius: 10px;
+    width: 100%;
+    font-weight: bold;
+    font-size: 1.5em;
+}
+
 input[type="submit"]{
     height: 30px;
     border-radius: 20px;

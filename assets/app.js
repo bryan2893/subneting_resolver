@@ -79,6 +79,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
     function calcularSubnets(event){
         event.preventDefault();
+        console.log("La transformacion dio -> "+transformbitsOctectToDecimal("10000011"));
     }
-
+    
 },false);
