@@ -4,10 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/assets/style.css">
     <title>Subneting resolver</title>
 </head>
 <body>
-    <h1>Hello world pedos</h1>
+    <div id="mainContainer">
+        <div>
+            <h1>Ingrese parámetros para el calculo</h1>
+            <form id="calculationForm">
+                <input type="text" name="txtNet" placeholder="Direccion IP">
+                <input type="text" name="txtMask" placeholder="Máscara de red">
+                <input type="text" name="txtParseTo" placeholder="Máscara destino">
+                <input type="submit" value="Calcular">
+            </form>
+        </div>
+        <div id="subnetsDisplayer">
+            
+        </div>
+    </div>
 </body>
 <script src="/assets/app.js"></script>
 </html>
