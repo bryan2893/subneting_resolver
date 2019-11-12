@@ -2,6 +2,8 @@ const equivalenceTable = [1,2,4,8,16,32,64,128];
 
 const maskClasses = [8,16,24];//contiene las máscaras de red válidas.
 
+const ipv4Length = 32;
+
 const reverseString = function(string){
     let newString = "";
     for (let i = string.length - 1; i >= 0; i--) { 
@@ -107,15 +109,134 @@ const getBinaryIpFromShortDecimalNetMaskRepresentation = function(shortNetMaskRe
     return octectsArray.join(".");
 };
 
+const countOnesInBinaryMask = function(binaryMaskString){
+    let counter = 0;
+    for(let i = 0;i<binaryMaskString.length;i++){
+        if(binaryMaskString[i] === "1"){
+            counter += 1;
+        }
+    }
+    return counter;
+}
+
+const getSkipedSubnetDirection = function(ip,netMask,netSkip){
+    let decimalOctets = ip.split(".");
+    let transformedOctetsToNumbers = decimalOctets.map(function(stringOctect){
+        return parseInt(stringOctect);
+    });
+    let byteThatChange = null;
+    if(netMask === 8){
+        byteThatChange = 1;
+    }else if(netMask === 16){
+        byteThatChange = 2;
+    }else if(netMask === 24){
+        byteThatChange = 3;
+    }else{
+        return new Error("Máscara inválida!");
+    }
+    transformedOctetsToNumbers[byteThatChange] += netSkip;
+    return transformedOctetsToNumbers.join(".");
+};
+
+const getSubnetFirstLastAndBroadcast = function(subnetDecimalIpSecuence,netMask,netSkip){
+
+    let decimalOctets = subnetDecimalIpSecuence.split(".");
+    let transformedOctetsToNumbers = decimalOctets.map(function(stringOctect){
+        return parseInt(stringOctect);
+    });
+
+    let firstIp,lastIp,broadcast = null;
+    if(netMask === 8){
+        let first = [...transformedOctetsToNumbers];
+        first[3] += 1
+        firstIp = first;
+        let last = [...first];
+        last[1] += netSkip-1;
+        last[2] = 255;
+        last[3] = 254;
+        lastIp = last;
+        let broad = [...last];
+        broad[2] = 255;
+        broad[3] = 255;
+        broadcast = broad;
+    }else if(netMask === 16){
+        let first = [...transformedOctetsToNumbers];
+        first[3] += 1
+        firstIp = first;
+        let last = [...first];
+        last[2] += netSkip-1;
+        last[3] = 254;
+        lastIp = last;
+        let broad = [...last];
+        broad[3] = 255;
+        broadcast = broad;
+    }else if(netMask === 24){
+        let first = [...transformedOctetsToNumbers];
+        first[3] += 1
+        firstIp = first;
+        let last = [...transformedOctetsToNumbers];
+        last[3] += netSkip - 2;
+        lastIp = last;
+        let broad = [...transformedOctetsToNumbers];
+        broad[3] += netSkip - 1;
+        broadcast = broad;
+    }else{
+        return new Error("Máscara inválida!");
+    }
+    
+    let rowPortion = {subnet:transformedOctetsToNumbers.join(".")
+                        ,first:firstIp.join("."),
+                        last:lastIp.join("."),
+                        broadcast:broadcast.join(".")};
+
+    return rowPortion;
+};
+
+
 const getSubnets = function(decimalNetworkAddresIp,shortNetMaskRepresentation,amountOfSubnetsNeeded){
+
+    let subnetIfo = {
+        networkAddress:decimalNetworkAddresIp,
+        netMask: null,
+        amountOfSubnets: null,
+        newMask: null,
+        hostsPerSubnet: null,
+        networkSkip: null,
+        rowsToDisplay:[]
+    };
 
     let N = resolveFormula(amountOfSubnetsNeeded);
     let amountOfSubnets = Math.pow(2,N); //cantidad de subredes que se crearán.
+    let binaryRepOfNetMask = getBinaryIpFromShortDecimalNetMaskRepresentation(shortNetMaskRepresentation);
 
-    let subnetIfo = {
-        networkAddress:"",
-        netMask:""
-    };
+    let newShortDecimalMaskRepresentation = shortNetMaskRepresentation + N;
+
+    let newbinaryRepOfNetMask = getBinaryIpFromShortDecimalNetMaskRepresentation(newShortDecimalMaskRepresentation);
+
+    let M = ipv4Length - countOnesInBinaryMask(newbinaryRepOfNetMask);//representa la cantidad de ceros o de bits destinados a host.
+
+    let hostsPerSubnet = (Math.pow(2,M)) - 2;
+
+    let modifiedOctectBinaryRep = "1".repeat(N) + "0".repeat(8-N);
+
+    let networkSkip = 256 - transformBinaryOctectToDecimal(modifiedOctectBinaryRep); //representa el salto de red.
 
 
+    subnetIfo.netMask = transformBinaryIpToDecimalIp(binaryRepOfNetMask);
+    subnetIfo.amountOfSubnets = amountOfSubnets;
+    subnetIfo.newMask = newbinaryRepOfNetMask;
+    subnetIfo.networkSkip = networkSkip;
+    subnetIfo.hostsPerSubnet = hostsPerSubnet;
+
+    let i = 0;
+    let currentDirection = decimalNetworkAddresIp;
+    while(i < amountOfSubnets){
+        let rowinfo = getSubnetFirstLastAndBroadcast(currentDirection,shortNetMaskRepresentation,networkSkip);
+        subnetIfo.rowsToDisplay.push(rowinfo);
+        let nextSkip = getSkipedSubnetDirection(currentDirection,shortNetMaskRepresentation,networkSkip);
+        currentDirection = nextSkip;
+        i++;
+    }
+
+    return subnetIfo;
 };
