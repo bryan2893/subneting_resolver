@@ -12,14 +12,19 @@
         <div>
             <h1>Ingrese parámetros para el calculo</h1>
             <form id="calculationForm">
-                <input type="text" name="txtNet" placeholder="Direccion IP">
-                <input type="number" name="txtMask" placeholder="Máscara de red">
-                <input type="text" name="txtParseTo" placeholder="Máscara destino">
-                <input type="submit" value="Calcular">
+                <input type="text" id="txtNet" placeholder="Direccion IP">
+                <input type="number" id="txtMask" placeholder="Máscara de red">
+                <input type="number" id="txtAmount" placeholder="Cuantas sub redes quieres crear ?">
+                <input type="submit" id="Calcular" value="Ejecutar">
             </form>
         </div>
-        <div id="subnetsDisplayer">
-            
+        <table id="subnetsDisplayer">
+            <tr>
+                <th>SubnetIp</th>
+                <th>First useful</th>
+                <th>Last useful</th>
+                <th>Broadcast</th>
+            </tr>
         </div>
     </div>
 </body>

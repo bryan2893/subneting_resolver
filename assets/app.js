@@ -73,13 +73,46 @@ document.addEventListener('DOMContentLoaded', function(){
 
     */
 
-    document.getElementsByName("txtNet")[0].focus();
+    const createRow = function(rowObject){
 
+        let tr = document.createElement("tr");
+        let arrayOfKeys = Object.keys(rowObject);
+        console.log("Array of keys: "+ arrayOfKeys);
+        for (let i = 0;i<arrayOfKeys.length;i++){
+            let td = document.createElement("td");
+            let textNode = document.createTextNode(rowObject[arrayOfKeys[i]]);
+            td.appendChild(textNode);
+            tr.appendChild(td);
+        }
+
+        return tr;
+
+    };
+
+    const fillSubnetDisplayer = function(arrayOfRows){
+        let subnetDisplayer = document.getElementById("subnetsDisplayer");
+        for(let i = 0;i<arrayOfRows.length;i++){
+            let createdTr = createRow(arrayOfRows[i]);
+            subnetDisplayer.appendChild(createdTr);
+        }
+    };
+
+    const cleanTable = function(){
+        let table = document.getElementById("subnetsDisplayer");
+        table.innerHTML = "<tr><th>SubnetIp</th><th>First useful</th><th>Last useful</th><th>Broadcast</th></tr>";
+    };
+
+    document.getElementById("txtNet").focus();
     document.getElementById("calculationForm").addEventListener("submit",calcularSubnets);
 
     function calcularSubnets(event){
         event.preventDefault();
-        console.log("La transformacion dio -> "+transformbitsOctectToDecimal("10000011"));
+        cleanTable();
+        let txtNet = document.getElementById("txtNet").value;
+        let txtMask = parseInt(document.getElementById("txtMask").value);
+        let txtAmount = parseInt(document.getElementById("txtAmount").value);
+        let subnetingInfo = getSubnets(txtNet,txtMask,txtAmount);
+        fillSubnetDisplayer(subnetingInfo.rowsToDisplay);
     }
     
 },false);

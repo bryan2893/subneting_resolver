@@ -50,5 +50,14 @@ input[type="submit"]:hover{
 #subnetsDisplayer{
     width: 90%;
     height: 50px;
-    background-color: darksalmon;
+    text-align: center;
+    color: white;
+}
+
+td{
+    font-size: 1.5em;
+}
+
+th{
+    font-size: 1.5em;
 }
